@@ -32,6 +32,8 @@
     },
   ];
 
+  const REPO = 'https://github.com/fuchs-harry/electric-machines-model';
+
   const appEl = document.getElementById('app');
   const sidebar = document.getElementById('sidebar');
   const main = document.getElementById('main');
@@ -90,7 +92,8 @@
       get: () => MS.lang, set: MS.setLang, full: true, label: L('Sprache', 'Language'),
     });
     sidebar.append(h('div', { class: 'sidebar-foot' }, lang.el, theme.el,
-      h('p', { html: L('Lernwerkzeug, kein Ersatz für Skriptum und Übung. Alle Modelle, Kennlinien und Bilder werden hier aus den Gleichungen berechnet.', 'A learning tool, not a replacement for the lecture notes and exercises. All models, characteristics and drawings are computed here from the equations.') })));
+      h('p', { html: L('Lernwerkzeug, kein Ersatz für Skriptum und Übung. Alle Modelle, Kennlinien und Bilder werden hier aus den Gleichungen berechnet.', 'A learning tool, not a replacement for the lecture notes and exercises. All models, characteristics and drawings are computed here from the equations.') }),
+      h('p', {}, h('a', { href: REPO, target: '_blank', rel: 'noopener', text: L('Quellcode auf GitHub', 'Source code on GitHub') }))));
   };
 
   // ---------------------------------------------------------------- router
@@ -151,7 +154,7 @@
   // ---------------------------------------------------------------- init
   buildSidebar();
   const meta = document.querySelector('meta[name="description"]');
-  if (meta) meta.content = L(meta.content, 'Interactive simulation of electric machines for learning: DC machine, permanent-magnet synchronous machine, space vectors – characteristics, equivalent circuits, phasor diagrams.');
+  if (meta) meta.content = L('Interaktive Simulation elektrischer Maschinen zum Lernen: Gleichstrommaschine, permanenterregte Synchronmaschine, Raumzeiger – Kennlinien, Ersatzschaltbilder, Zeigerdiagramme.', meta.content);
   main.addEventListener('scroll', () => main.classList.toggle('scrolled', main.scrollTop > 4), { passive: true });
   ui.themeListeners.add(() => {
     buildSidebar();

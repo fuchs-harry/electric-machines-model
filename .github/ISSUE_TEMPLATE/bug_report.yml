@@ -1,0 +1,32 @@
+name: Bug report
+description: Something is computed, drawn or explained wrong.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time! Please describe the problem in your own words – don't attach pages from lecture notes or exams.
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: Copy the URL, e.g. `…/#/gsm/neben`
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Include the parameter values you used. A screenshot of the app helps.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: For a physics error, a short hand calculation helps a lot.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: e.g. Firefox 140 on Windows 11

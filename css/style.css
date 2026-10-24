@@ -177,6 +177,8 @@ button, input, select { font: inherit; color: inherit; }
 .nav a .tag { margin-left: auto; font-size: 11px; color: var(--ink-3); }
 .sidebar-foot { margin-top: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
 .sidebar-foot p { font-size: 11.5px; color: var(--ink-3); line-height: 1.4; }
+.sidebar-foot a { color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--hair, currentColor); text-underline-offset: 2px; }
+.sidebar-foot a:hover { color: var(--ink); }
 
 .main { overflow-y: auto; overflow-x: hidden; min-width: 0; scroll-behavior: smooth; }
 .menu-btn { display: none; }

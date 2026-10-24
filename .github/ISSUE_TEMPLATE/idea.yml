@@ -1,0 +1,16 @@
+name: Experiment or feature idea
+description: An experiment, view or machine that would help you understand something.
+labels: [idea]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to see?
+      description: Which concept should it make clear? What would you change, and what should the student observe?
+    validations:
+      required: true
+  - type: textarea
+    id: physics
+    attributes:
+      label: Physics background (optional)
+      description: Equations, expected numbers or a reference – in your own words, no copies of course material.

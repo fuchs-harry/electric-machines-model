@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax check
+        run: for f in js/*.js js/*/*.js; do node --check "$f"; done
+
+      - name: Physics tests
+        run: npm test
+
+      - name: No course material in the repository
+        run: |
+          if git ls-files | grep -iE '\.(pdf|tex|zip|m)$'; then
+            echo "::error::Course material (PDF/TeX/ZIP/MATLAB) must not be committed – see CONTRIBUTING.md."
+            exit 1
+          fi

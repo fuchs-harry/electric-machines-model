@@ -1,11 +1,31 @@
 {
   "name": "maschinenlabor",
-  "version": "0.1.0",
-  "description": "Interaktive Simulation elektrischer Maschinen (Gleichstrommaschine, PSM, Raumzeiger) zum Lernen – läuft im Browser, ohne Build.",
+  "version": "1.0.0",
+  "description": "Interactive simulator for DC machines and permanent-magnet synchronous machines – runs in the browser, no build step.",
   "private": true,
+  "keywords": [
+    "electric-machines",
+    "dc-motor",
+    "pmsm",
+    "field-oriented-control",
+    "space-vector",
+    "simulation",
+    "engineering-education"
+  ],
+  "homepage": "https://fuchs-harry.github.io/electric-machines-model/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuchs-harry/electric-machines-model.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fuchs-harry/electric-machines-model/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "node --test tests/physics.test.js",
     "start": "python -m http.server 8000"
-  },
-  "license": "MIT"
+  }
 }
