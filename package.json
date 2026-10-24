@@ -1,0 +1,11 @@
+{
+  "name": "maschinenlabor",
+  "version": "0.1.0",
+  "description": "Interaktive Simulation elektrischer Maschinen (Gleichstrommaschine, PSM, Raumzeiger) zum Lernen – läuft im Browser, ohne Build.",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/physics.test.js",
+    "start": "python -m http.server 8000"
+  },
+  "license": "MIT"
+}
