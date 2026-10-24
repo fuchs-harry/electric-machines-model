@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ersatzschaltbilder</title>
+<style>
+  :root {
+    --page: #ffffff; --surface: #ffffff; --ink: #1d1d1f; --ink2: #6e6e73; --hair: #d2d2d7; --ctl: #1d1d1f; --ctl-bg: #f2f2f4;
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --page: #000000; --surface: #000000; --ink: #f5f5f7; --ink2: #98989d; --hair: #38383a; --ctl: #f5f5f7; --ctl-bg: #1c1c1e;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--page); color: var(--ink); }
+  body {
+    font: 14px/1.45 Inter, -apple-system, "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 28px 24px 56px;
+  }
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px 32px; max-width: 1400px; margin: 0 auto 24px; }
+  header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  header p { margin: 2px 0 0; color: var(--ink2); max-width: 64ch; }
+  .global { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-left: auto; }
+  .seg { display: inline-flex; border: 1px solid var(--hair); border-radius: 8px; overflow: hidden; }
+  .seg button {
+    appearance: none; border: 0; background: transparent; color: var(--ink2); font: inherit; font-size: 13px;
+    padding: 5px 12px; cursor: pointer; border-right: 1px solid var(--hair);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--ctl); color: var(--page); }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .check { display: inline-flex; align-items: center; gap: 6px; color: var(--ink2); font-size: 13px; cursor: pointer; }
+  .check input { accent-color: var(--ctl); margin: 0; }
+  section { max-width: 1400px; margin: 0 auto 36px; }
+  section > h2 { font-size: 17px; font-weight: 600; margin: 0 0 12px; }
+  section > h2 small { color: var(--ink2); font-weight: 400; margin-left: 10px; font-size: 13px; }
+  .panel { display: grid; grid-template-columns: 300px 1fr; gap: 22px; align-items: start; }
+  @media (max-width: 900px) { .panel { grid-template-columns: 1fr; } }
+  .controls { border: 1px solid var(--hair); border-radius: 14px; padding: 14px 16px; display: grid; gap: 10px; font-size: 12.5px; }
+  .controls .row { display: grid; grid-template-columns: 88px 1fr 52px; gap: 8px; align-items: center; }
+  .controls .row label, .controls .row .sym { color: var(--ink2); white-space: nowrap; }
+  .controls .sym { font-family: "STIX Two Text", "Times New Roman", serif; font-style: italic; font-size: 14px; color: var(--ink); }
+  .controls .sym sub { font-style: normal; font-size: 10px; }
+  .controls output { font-variant-numeric: tabular-nums; color: var(--ink2); text-align: right; }
+  .controls .group { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-top: 4px; border-top: 1px solid var(--hair); }
+  .controls .group:first-child { border-top: 0; padding-top: 0; }
+  input[type=range] { appearance: none; -webkit-appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; }
+  input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--hair); border-radius: 1px; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); border: 1.5px solid var(--ctl); margin-top: -7px; }
+  input[type=range]::-moz-range-track { height: 2px; background: var(--hair); }
+  input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--surface); border: 1.5px solid var(--ctl); }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+  .card { border: 1px solid var(--hair); border-radius: 14px; background: var(--surface); padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .card.dark { --surface: #000000; --ink: #f5f5f7; --ink2: #98989d; --hair: #38383a; color-scheme: dark; }
+  .card.light { --surface: #ffffff; --ink: #1d1d1f; --ink2: #6e6e73; --hair: #d2d2d7; color-scheme: light; }
+  .card h3 { font-size: 14px; font-weight: 600; margin: 0; color: var(--ink); }
+  .card h3 small { color: var(--ink2); font-weight: 400; margin-left: 8px; }
+  .stage { display: flex; justify-content: center; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Ersatzschaltbilder</h1>
+    <p>Live-ESB für Gleichstrommaschine und PSM – jede Variante in Hell und Dunkel. Pfeile sind Bezugspfeile (VZS), Werte sind vorzeichenbehaftet; Punkte laufen mit dem Strom.</p>
+  </div>
+  <div class="global">
+    <div class="seg" role="group" aria-label="Breite">
+      <button data-size="320" aria-pressed="false">320</button>
+      <button data-size="420" aria-pressed="true">420</button>
+      <button data-size="560" aria-pressed="false">560</button>
+    </div>
+    <label class="check"><input type="checkbox" id="g-labels" checked> Beschriftung</label>
+    <label class="check"><input type="checkbox" id="g-nan"> Werte fehlen (NaN)</label>
+    <label class="check"><input type="checkbox" id="g-anim" checked> Animation</label>
+    <div class="seg" role="group" aria-label="Seite">
+      <button data-theme="light" aria-pressed="true">Hell</button>
+      <button data-theme="dark" aria-pressed="false">Dunkel</button>
+    </div>
+  </div>
+</header>
+
+<section id="dc">
+  <h2>Gleichstrommaschine <small>drawDC – pm · fremd · neben · reihen</small></h2>
+  <div class="panel">
+    <div class="controls" id="dc-controls">
+      <div class="group">
+        <label class="check"><input type="radio" name="supply" value="source" checked> Spannungsquelle</label>
+        <label class="check"><input type="radio" name="supply" value="load"> Last <span class="sym">R<sub>L</sub></span></label>
+      </div>
+      <div class="group">
+        <label class="check"><input type="checkbox" name="on" checked> Schalter zu</label>
+        <label class="check"><input type="checkbox" name="currentLimit"> Stromrichter</label>
+        <label class="check"><input type="checkbox" name="showRV"> <span class="sym">R<sub>V</sub></span></label>
+        <label class="check"><input type="checkbox" name="showRVE"> <span class="sym">R<sub>VE</sub></span></label>
+        <label class="check"><input type="checkbox" name="fieldReversed"> Feld umgepolt</label>
+        <label class="check"><input type="checkbox" name="openLoad"> Klemmen offen</label>
+      </div>
+      <div class="group" id="dc-sliders"></div>
+    </div>
+    <div class="gallery" id="dc-gallery"></div>
+  </div>
+</section>
+
+<section id="psm">
+  <h2>Permanentmagnet-Synchronmaschine <small>drawPSM – space · dq</small></h2>
+  <div class="panel">
+    <div class="controls" id="psm-controls">
+      <div class="group">
+        <label class="check"><input type="radio" name="source" value="inverter" checked> Wechselrichter</label>
+        <label class="check"><input type="radio" name="source" value="uf"> U/f</label>
+        <label class="check"><input type="radio" name="source" value="short"> Kurzschluss</label>
+        <label class="check"><input type="radio" name="source" value="resistor"> <span class="sym">r<sub>L</sub></span></label>
+        <label class="check"><input type="radio" name="source" value="open"> offen</label>
+      </div>
+      <div class="group" id="psm-sliders"></div>
+    </div>
+    <div class="gallery" id="psm-gallery"></div>
+  </div>
+</section>
+
+<script src="../js/core/ms.js"></script>
+<script src="../js/core/complex.js"></script>
+<script src="../js/ui/circuits.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+
+  // ---------------------------------------------------------------- state
+  const g = { size: 420, labels: true, nan: false, anim: true };
+  const dc = {
+    supply: 'source', on: true, currentLimit: false, showRV: false, showRVE: false, fieldReversed: false, openLoad: false,
+    UA: 220, IA: 20, IE: 2, n: 1590, RA: 0.5, LA: 0.01, RV: 2, RE: 110, RVE: 55, LE: 11, RL: 10,
+  };
+  const psm = { source: 'inverter', id: 0, iq: 1, w: 0.8, psiM: 1, rs: 0.05, ls: 0.3, rL: 0.5 };
+
+  // ---------------------------------------------------------------- sliders
+  function slider(host, obj, key, label, min, max, step, fmt) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = '<span class="sym">' + label + '</span><input type="range"><output></output>';
+    const inp = $('input', row), out = $('output', row);
+    inp.min = min; inp.max = max; inp.step = step; inp.value = obj[key];
+    const show = () => { out.textContent = fmt ? fmt(obj[key]) : obj[key]; };
+    inp.addEventListener('input', () => { obj[key] = parseFloat(inp.value); show(); });
+    show();
+    host.appendChild(row);
+  }
+  const sd = $('#dc-sliders');
+  slider(sd, dc, 'UA', 'U<sub>A</sub>', -260, 260, 1, (v) => v + ' V');
+  slider(sd, dc, 'IA', 'I<sub>A</sub>', -40, 40, 0.1, (v) => v.toFixed(1) + ' A');
+  slider(sd, dc, 'IE', 'I<sub>E</sub>', -4, 4, 0.05, (v) => v.toFixed(2) + ' A');
+  slider(sd, dc, 'n', 'n', -3000, 3000, 10, (v) => v + ' min⁻¹');
+  slider(sd, dc, 'RL', 'R<sub>L</sub>', 0.5, 50, 0.5, (v) => v + ' Ω');
+  const sp = $('#psm-sliders');
+  slider(sp, psm, 'id', 'i<sub>d</sub>', -1.5, 1.5, 0.01, (v) => v.toFixed(2));
+  slider(sp, psm, 'iq', 'i<sub>q</sub>', -1.5, 1.5, 0.01, (v) => v.toFixed(2));
+  slider(sp, psm, 'w', 'ω', -1.5, 1.5, 0.01, (v) => v.toFixed(2));
+  slider(sp, psm, 'ls', 'l<sub>S</sub>', 0.05, 1, 0.01, (v) => v.toFixed(2));
+  slider(sp, psm, 'rL', 'r<sub>L</sub>', 0, 2, 0.05, (v) => v.toFixed(2));
+
+  // ---------------------------------------------------------------- toggles
+  $$('#dc-controls input[type=checkbox]').forEach((el) => el.addEventListener('change', () => { dc[el.name] = el.checked; }));
+  $$('#dc-controls input[type=radio]').forEach((el) => el.addEventListener('change', () => { if (el.checked) dc.supply = el.value; }));
+  $$('#psm-controls input[type=radio]').forEach((el) => el.addEventListener('change', () => { if (el.checked) psm.source = el.value; }));
+  $('#g-labels').addEventListener('change', (e) => { g.labels = e.target.checked; });
+  $('#g-nan').addEventListener('change', (e) => { g.nan = e.target.checked; });
+  $('#g-anim').addEventListener('change', (e) => { g.anim = e.target.checked; });
+  $$('[data-size]').forEach((b) => b.addEventListener('click', () => {
+    g.size = parseInt(b.dataset.size, 10);
+    $$('[data-size]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    layout();
+  }));
+  $$('[data-theme]').forEach((b) => b.addEventListener('click', () => {
+    document.documentElement.dataset.theme = b.dataset.theme;
+    $$('[data-theme]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  }));
+
+  // ---------------------------------------------------------------- cards
+  const cards = [];
+  function card(host, title, sub, dark, draw) {
+    const el = document.createElement('div');
+    el.className = 'card ' + (dark ? 'dark' : 'light');
+    el.innerHTML = '<h3>' + title + '<small>' + sub + (dark ? ' · dunkel' : ' · hell') + '</small></h3><div class="stage"><canvas></canvas></div>';
+    host.appendChild(el);
+    const canvas = $('canvas', el);
+    cards.push({ canvas, ctx: canvas.getContext('2d'), dark, draw, w: 0, h: 0 });
+  }
+  const DC_NAMES = { pm: 'Permanenterregt', fremd: 'Fremderregt', neben: 'Nebenschluss', reihen: 'Reihenschluss' };
+  const dcGal = $('#dc-gallery'), psmGal = $('#psm-gallery');
+  ['pm', 'fremd', 'neben', 'reihen'].forEach((type) => {
+    [false, true].forEach((dark) => card(dcGal, DC_NAMES[type], type, dark, (ctx, o) => MS.circuits.drawDC(ctx, Object.assign(o, dcOpts(type)))));
+  });
+  [['space', 'Raumzeiger-ESB'], ['dq', 'dq-ESB']].forEach(([view, name]) => {
+    [false, true].forEach((dark) => card(psmGal, name, view, dark, (ctx, o) => MS.circuits.drawPSM(ctx, Object.assign(o, psmOpts(view)))));
+  });
+
+  const NaNify = (obj) => { const r = {}; for (const k in obj) r[k] = NaN; return r; };
+
+  function dcOpts(type) {
+    const load = dc.supply === 'load';
+    const IA = dc.IA, IE = type === 'reihen' ? IA : dc.IE;
+    const Isup = type === 'neben' ? IA + IE : IA;
+    const RE = type === 'reihen' ? 0.2 : dc.RE, LE = type === 'reihen' ? 9e-3 : dc.LE;
+    const RA = dc.RA + (dc.showRV && !load ? dc.RV : 0) + (type === 'reihen' ? RE : 0);
+    const Ui = load ? -(dc.RL + RA) * IA : dc.UA - RA * IA;
+    const U = load ? -dc.RL * Isup : dc.UA;
+    const M = (Ui / Math.max(1, Math.abs(dc.n)) * 60 / (2 * Math.PI)) * IA;
+    let values = { U, UA: dc.UA, IA, IE, Isup, Ui, UE: 220, RA: dc.RA, LA: dc.LA, RV: dc.RV, RE, RVE: dc.RVE, LE, RL: dc.RL, n: dc.n, M };
+    if (g.nan) values = NaNify(values);
+    return {
+      type, supply: dc.supply, on: dc.on, currentLimit: dc.currentLimit, showRV: dc.showRV, showRVE: dc.showRVE,
+      fieldReversed: dc.fieldReversed, openLoad: dc.openLoad, values, iRef: 20,
+    };
+  }
+  function psmOpts(view) {
+    const { id, iq, w, psiM, rs, ls, rL } = psm;
+    const ud = rs * id - w * ls * iq, uq = rs * iq + w * (ls * id + psiM);
+    let values = { ud, uq, id, iq, absU: Math.hypot(ud, uq), absI: Math.hypot(id, iq), w, psiM, rs, ls, rL };
+    if (g.nan) values = NaNify(values);
+    return { view, source: psm.source, values, iRef: 1 };
+  }
+
+  // ---------------------------------------------------------------- render loop
+  function layout() {
+    const dpr = window.devicePixelRatio || 1;
+    for (const c of cards) {
+      c.w = g.size; c.h = Math.round(g.size * 240 / 440);
+      c.canvas.style.width = c.w + 'px'; c.canvas.style.height = c.h + 'px';
+      c.canvas.width = Math.round(c.w * dpr); c.canvas.height = Math.round(c.h * dpr);
+    }
+  }
+  layout();
+  const t0 = performance.now();
+  let errors = 0;
+  function frame(now) {
+    const flow = (now - t0) / 1000;
+    const dpr = window.devicePixelRatio || 1;
+    for (const c of cards) {
+      const ctx = c.ctx;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, c.w, c.h);
+      try {
+        c.draw(ctx, { x: 0, y: 0, w: c.w, h: c.h, dark: c.dark, flow, labels: g.labels, animate: g.anim });
+      } catch (e) {
+        if (errors++ < 5) console.error(e);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

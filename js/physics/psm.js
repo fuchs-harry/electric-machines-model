@@ -189,8 +189,12 @@
       const ffd = -w * p.ls * iq;
       const ffq = w * (p.ls * id + p.psiM);
       const u = { d: Kp * ed + this.z.d + ffd, q: Kp * eq + this.z.q + ffq };
+      const ud = u.d, uq = u.q;
       this.sat = this._limit(u);
-      if (!this.sat) { this.z.d += Ki * ed * h; this.z.q += Ki * eq * h; }
+      // back-calculation anti-windup: bleed the integrators toward the limited output
+      const kaw = p.alpha;
+      this.z.d += (Ki * ed + kaw * (u.d - ud)) * h;
+      this.z.q += (Ki * eq + kaw * (u.q - uq)) * h;
       this.u = u;
     }
 
@@ -207,8 +211,12 @@
       const ua = Kp * ea + this.z.a + ffa;
       const ub = Kp * eb + this.z.b + ffb;
       const u = { d: ua * c + ub * s, q: -ua * s + ub * c }; // to dq
+      const ud = u.d, uq = u.q;
       this.sat = this._limit(u);
-      if (!this.sat) { this.z.a += Ki * ea * h; this.z.b += Ki * eb * h; }
+      // back-calculation anti-windup (difference rotated back to αβ)
+      const kaw = 2 * p.alpha, dd = u.d - ud, dq = u.q - uq;
+      this.z.a += (Ki * ea + kaw * (dd * c - dq * s)) * h;
+      this.z.b += (Ki * eb + kaw * (dd * s + dq * c)) * h;
       this.u = u;
     }
 

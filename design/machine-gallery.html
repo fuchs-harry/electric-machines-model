@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maschinenmodelle</title>
+<style>
+  :root {
+    --page: #ffffff; --surface: #ffffff; --ink: #1d1d1f; --ink2: #6e6e73; --hair: #d2d2d7; --ctl: #1d1d1f; --ctl-bg: #f2f2f4;
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --page: #000000; --surface: #000000; --ink: #f5f5f7; --ink2: #98989d; --hair: #38383a; --ctl: #f5f5f7; --ctl-bg: #1c1c1e;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--page); color: var(--ink); }
+  body {
+    font: 14px/1.45 Inter, -apple-system, "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 28px 24px 56px;
+  }
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px 32px; max-width: 1400px; margin: 0 auto 28px; }
+  header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  header p { margin: 2px 0 0; color: var(--ink2); max-width: 60ch; }
+  .global { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-left: auto; }
+  .seg { display: inline-flex; border: 1px solid var(--hair); border-radius: 8px; overflow: hidden; }
+  .seg button {
+    appearance: none; border: 0; background: transparent; color: var(--ink2); font: inherit; font-size: 13px;
+    padding: 5px 12px; cursor: pointer; border-right: 1px solid var(--hair);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--ctl); color: var(--page); }
+  .seg button:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .btn { appearance: none; border: 1px solid var(--hair); border-radius: 8px; background: transparent; color: var(--ink); font: inherit; font-size: 13px; padding: 5px 12px; cursor: pointer; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 22px; max-width: 1400px; margin: 0 auto; }
+  .card { border: 1px solid var(--hair); border-radius: 14px; background: var(--surface); padding: 16px 16px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .card h2 { font-size: 15px; font-weight: 600; margin: 0; }
+  .card h2 small { color: var(--ink2); font-weight: 400; margin-left: 8px; }
+  .stage { display: flex; justify-content: center; }
+  canvas { display: block; }
+  .controls { display: grid; grid-template-columns: auto 1fr auto; gap: 6px 10px; align-items: center; font-size: 12.5px; }
+  .controls label { color: var(--ink2); white-space: nowrap; }
+  .controls .sym { font-family: "STIX Two Text", "Times New Roman", serif; font-style: italic; font-size: 14px; color: var(--ink); }
+  .controls .sym sub { font-style: normal; font-size: 10px; }
+  .controls output { font-variant-numeric: tabular-nums; color: var(--ink2); min-width: 4.5ch; text-align: right; }
+  input[type=range] { appearance: none; -webkit-appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; }
+  input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--hair); border-radius: 1px; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); border: 1.5px solid var(--ctl); margin-top: -7px; }
+  input[type=range]::-moz-range-track { height: 2px; background: var(--hair); }
+  input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--surface); border: 1.5px solid var(--ctl); }
+  .checks { display: flex; flex-wrap: wrap; gap: 4px 14px; grid-column: 1 / -1; color: var(--ink2); }
+  .checks label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+  .checks input { accent-color: var(--ctl); margin: 0; }
+  .sizes { display: flex; align-items: center; gap: 8px; color: var(--ink2); font-size: 13px; }
+  .sizes input { width: 120px; }
+  @media (prefers-reduced-motion: reduce) { .seg button, .btn { transition: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Maschinenmodelle</h1>
+    <p>Prozedural gezeichnete Schnittbilder für das Maschinenlabor. Farbe bezeichnet ausschließlich physikalische Größen: Strom, Fluss, Moment, Spannung, Stränge 1/2/3.</p>
+  </div>
+  <div class="global">
+    <div class="seg" role="group" aria-label="Darstellung">
+      <button data-theme="auto" aria-pressed="true">Auto</button>
+      <button data-theme="light" aria-pressed="false">Hell</button>
+      <button data-theme="dark" aria-pressed="false">Dunkel</button>
+    </div>
+    <div class="sizes"><span>Größe</span><input id="size" type="range" min="200" max="420" step="10" value="320"><output id="sizeOut">320 px</output></div>
+    <button class="btn" id="play" aria-pressed="true">Pause</button>
+  </div>
+</header>
+<main class="gallery" id="gallery"></main>
+
+<script src="../js/core/ms.js"></script>
+<script src="../js/core/complex.js"></script>
+<script src="../js/ui/machine-art.js"></script>
+<script>
+(function () {
+  'use strict';
+  const C = MS.C, art = MS.art;
+  const TAU = Math.PI * 2;
+  const root = document.documentElement;
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  let themeChoice = 'auto';
+  const isDark = () => themeChoice === 'dark' || (themeChoice === 'auto' && mq.matches);
+  function applyTheme() {
+    root.dataset.theme = isDark() ? 'dark' : 'light';
+    document.querySelectorAll('.seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.theme === themeChoice)));
+  }
+  document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => { themeChoice = b.dataset.theme; applyTheme(); }));
+  mq.addEventListener('change', applyTheme);
+  applyTheme();
+
+  let size = 320;
+  const sizeEl = document.getElementById('size'), sizeOut = document.getElementById('sizeOut');
+  sizeEl.addEventListener('input', () => { size = +sizeEl.value; sizeOut.textContent = size + ' px'; cards.forEach((c) => c.resize()); });
+
+  let playing = true;
+  const playBtn = document.getElementById('play');
+  playBtn.addEventListener('click', () => { playing = !playing; playBtn.textContent = playing ? 'Pause' : 'Weiter'; playBtn.setAttribute('aria-pressed', String(playing)); });
+
+  // ---------------------------------------------------------------- cards
+  const gallery = document.getElementById('gallery');
+  const cards = [];
+
+  function slider(ctrls, label, key, state, min, max, step, fmt) {
+    const l = document.createElement('label');
+    l.innerHTML = label;
+    const r = document.createElement('input');
+    r.type = 'range'; r.min = min; r.max = max; r.step = step; r.value = state[key];
+    const o = document.createElement('output');
+    const show = () => { o.textContent = fmt ? fmt(state[key]) : (+state[key]).toFixed(2); };
+    r.addEventListener('input', () => { state[key] = +r.value; show(); });
+    show();
+    l.setAttribute('for', (r.id = 'r' + Math.random().toString(36).slice(2, 8)));
+    ctrls.append(l, r, o);
+    return r;
+  }
+  function checks(ctrls, items, state) {
+    const wrap = document.createElement('div');
+    wrap.className = 'checks';
+    items.forEach(([label, key]) => {
+      const l = document.createElement('label');
+      const c = document.createElement('input');
+      c.type = 'checkbox'; c.checked = !!state[key];
+      c.addEventListener('change', () => { state[key] = c.checked; });
+      l.append(c);
+      l.insertAdjacentHTML('beforeend', label);
+      wrap.append(l);
+    });
+    ctrls.append(wrap);
+  }
+
+  function makeCard(title, subtitle, build) {
+    const card = document.createElement('section');
+    card.className = 'card';
+    const h = document.createElement('h2');
+    h.textContent = title;
+    if (subtitle) { const sm = document.createElement('small'); sm.textContent = subtitle; h.append(sm); }
+    const stage = document.createElement('div');
+    stage.className = 'stage';
+    const canvas = document.createElement('canvas');
+    stage.append(canvas);
+    const ctrls = document.createElement('div');
+    ctrls.className = 'controls';
+    card.append(h, stage, ctrls);
+    gallery.append(card);
+    const ctx = canvas.getContext('2d');
+    const obj = { canvas, ctx, step: null, resize() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(size * dpr); canvas.height = Math.round(size * dpr);
+      canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+    } };
+    obj.resize();
+    build(ctrls, obj);
+    cards.push(obj);
+    return obj;
+  }
+
+  const deg = (v) => Math.round(v) + '°';
+  const sym = (m, s) => '<span class="sym">' + m + (s ? '<sub>' + s + '</sub>' : '') + '</span>';
+
+  // DC machines
+  [['pm', 'Gleichstrommaschine', 'permanenterregt'], ['fremd', 'Gleichstrommaschine', 'fremderregt'],
+   ['neben', 'Gleichstrommaschine', 'Nebenschluss'], ['reihen', 'Gleichstrommaschine', 'Reihenschluss']].forEach(([type, t, st]) => {
+    makeCard(t, st, (ctrls, card) => {
+      const st8 = { ia: 1, phi: 1, ie: 1, n: 0.6, forces: true, fields: true, torque: true, theta: 0 };
+      slider(ctrls, sym('i', 'A'), 'ia', st8, -3, 3, 0.05);
+      slider(ctrls, sym('Φ'), 'phi', st8, -1.3, 1.3, 0.05);
+      if (type !== 'pm') slider(ctrls, sym('i', 'E'), 'ie', st8, -3, 3, 0.05);
+      slider(ctrls, sym('n'), 'n', st8, -2, 2, 0.05);
+      checks(ctrls, [['Kräfte', 'forces'], ['Felder', 'fields'], ['Moment', 'torque']], st8);
+      card.step = (dt) => {
+        if (playing) st8.theta += st8.n * 1.2 * dt;
+        const ie = type === 'pm' ? undefined : (type === 'reihen' ? st8.ia : st8.ie);
+        const phi = type === 'pm' ? st8.phi : st8.phi * (ie === 0 ? 0 : Math.sign(ie));
+        art.drawDC(card.ctx, {
+          x: 0, y: 0, w: size, h: size, dark: isDark(), type,
+          theta: st8.theta, ia: st8.ia, phi, ie,
+          showForces: st8.forces, showFields: st8.fields, speed: st8.n,
+          torque: st8.torque ? st8.ia * phi : undefined,
+        });
+      };
+    });
+  });
+
+  // PSM
+  function psmCard(title, subtitle, mode, p) {
+    makeCard(title, subtitle, (ctrls, card) => {
+      const st8 = { I: 1, beta: 0, w: 0.5, axes: true, psiS: true, u: true, torque: true, gamma: 0.35, sector: 0 };
+      slider(ctrls, '|' + sym('i', 'S') + '|', 'I', st8, 0, 2, 0.05);
+      if (mode === 'sinus') slider(ctrls, 'Winkel zu ' + sym('q'), 'beta', st8, -90, 90, 1, deg);
+      slider(ctrls, sym('ω'), 'w', st8, -2, 2, 0.05);
+      checks(ctrls, [['Achsen', 'axes'], [sym('ψ', 'S'), 'psiS'], [sym('u', 'S'), 'u'], ['Moment', 'torque']], st8);
+      const lS = 0.3, rS = 0.05;
+      card.step = (dt) => {
+        if (playing) st8.gamma += st8.w * 1.0 * dt;
+        const g = st8.gamma;
+        const psiM = C.polar(1, g);
+        let iVec, sector;
+        if (mode === 'bldc') {
+          // Hall sector = 60° wedge centred on k·60°; block current 90° ahead of its centre
+          sector = ((Math.round(g / (TAU / 6)) % 6) + 6) % 6;
+          const phiI = sector * TAU / 6 + Math.PI / 2;
+          iVec = C.polar(st8.I * 2 / Math.sqrt(3), phiI);
+        } else {
+          iVec = C.polar(st8.I, g + Math.PI / 2 + st8.beta * Math.PI / 180);
+        }
+        const psiS = C.add(C.scale(iVec, lS), psiM);
+        const uVec = C.add(C.scale(iVec, rS), C.scale(C.j(psiS), st8.w));
+        const m = iVec.im * psiM.re - iVec.re * psiM.im; // -Im{i* ψ_M}
+        art.drawPSM(card.ctx, {
+          x: 0, y: 0, w: size, h: size, dark: isDark(), mode, polePairs: p,
+          gamma: g, i1: C.toPhase(iVec, 1), i2: C.toPhase(iVec, 2), i3: C.toPhase(iVec, 3),
+          iVec, psiS: st8.psiS ? psiS : undefined, uVec: st8.u ? uVec : undefined,
+          showAxes: st8.axes, sector, torque: st8.torque ? m : undefined, speed: st8.w,
+        });
+      };
+    });
+  }
+  psmCard('Synchronmaschine', 'PSM, Sinuskommutierung', 'sinus', 1);
+  psmCard('Synchronmaschine', 'PSM, Blockkommutierung (BLDC)', 'bldc', 1);
+  psmCard('Synchronmaschine', 'PSM, p = 2', 'sinus', 2);
+
+  // Robustness: empty opts and extreme values must not throw.
+  (function selfTest() {
+    const c = document.createElement('canvas'); c.width = c.height = 50;
+    const g = c.getContext('2d');
+    try {
+      art.drawDC(g); art.drawPSM(g);
+      art.drawDC(g, { w: 200, h: 120, ia: 99, phi: -99, ie: NaN, type: 'xyz', theta: Infinity });
+      art.drawPSM(g, { w: 120, h: 200, polePairs: 7, i1: 9, iVec: { re: NaN }, mode: 'bldc', sector: -4, gamma: 1e9 });
+      console.log('machine-art self-test ok');
+    } catch (e) { console.error('machine-art self-test failed', e); }
+  })();
+
+  // ---------------------------------------------------------------- loop
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    const dpr = window.devicePixelRatio || 1;
+    const dark = isDark();
+    for (const card of cards) {
+      const ctx = card.ctx;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.fillStyle = dark ? '#000000' : '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      card.step(dt);
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -240,6 +240,7 @@
     maxStep() {
       const p = this.p;
       let tau = this.lArm() / Math.max(this.rArm(), 1e-3);
+      if (p.type === 'fremd' || p.type === 'neben') tau = Math.min(tau, p.LE / this.rField());
       if (p.supply === 'load' && !this.openLoad) {
         tau = Math.min(tau, this.lArm() / (this.rArm() + p.RL));
         if (p.type === 'neben') tau = Math.min(tau, p.LE / (this.rField() + p.RL), p.LA / (p.RA + p.RL));
