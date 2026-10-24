@@ -4,29 +4,30 @@
 (function (root) {
   'use strict';
   const MS = root.MS;
+  const L = MS.L;
   const ui = MS.ui;
   const { h } = ui;
 
   const NAV = [
-    { title: null, items: [{ route: '', label: 'Übersicht', icon: 'home' }] },
-    { title: 'Grundlagen', items: [{ route: 'raumzeiger', label: 'Raumzeiger & Drehfeld', icon: 'waves' }] },
+    { title: null, items: [{ route: '', label: L('Übersicht', 'Overview'), icon: 'home' }] },
+    { title: L('Grundlagen', 'Fundamentals'), items: [{ route: 'raumzeiger', label: L('Raumzeiger & Drehfeld', 'Space vectors & rotating field'), icon: 'waves' }] },
     {
-      title: 'Gleichstrommaschine',
+      title: L('Gleichstrommaschine', 'DC machine'),
       items: [
-        { route: 'gsm/pm', label: 'Permanenterregt', icon: 'dc' },
-        { route: 'gsm/fremd', label: 'Fremderregt', icon: 'dc' },
-        { route: 'gsm/neben', label: 'Nebenschluss', icon: 'dc' },
-        { route: 'gsm/reihen', label: 'Reihenschluss', icon: 'dc' },
+        { route: 'gsm/pm', label: L('Permanenterregt', 'Permanent magnet'), icon: 'dc' },
+        { route: 'gsm/fremd', label: L('Fremderregt', 'Separately excited'), icon: 'dc' },
+        { route: 'gsm/neben', label: L('Nebenschluss', 'Shunt-wound'), icon: 'dc' },
+        { route: 'gsm/reihen', label: L('Reihenschluss', 'Series-wound'), icon: 'dc' },
       ],
     },
     {
-      title: 'Synchronmaschine (PSM)',
+      title: L('Synchronmaschine (PSM)', 'Synchronous machine (PMSM)'),
       items: [
-        { route: 'psm/foc', label: 'Sinusbetrieb', icon: 'psm' },
-        { route: 'psm/bldc', label: 'Blockkommutierung', icon: 'psm' },
-        { route: 'psm/uf', label: 'Spannungsgesteuert', icon: 'psm' },
-        { route: 'psm/passive', label: 'Generator & Kurzschluss', icon: 'psm' },
-        { route: 'psm/dc', label: 'Gleichstrom einprägen', icon: 'psm' },
+        { route: 'psm/foc', label: L('Sinusbetrieb', 'Sinusoidal operation'), icon: 'psm' },
+        { route: 'psm/bldc', label: L('Blockkommutierung', 'Block commutation'), icon: 'psm' },
+        { route: 'psm/uf', label: L('Spannungsgesteuert', 'Voltage-controlled (U/f)'), icon: 'psm' },
+        { route: 'psm/passive', label: L('Generator & Kurzschluss', 'Generator & short circuit'), icon: 'psm' },
+        { route: 'psm/dc', label: L('Gleichstrom einprägen', 'DC injection'), icon: 'psm' },
       ],
     },
   ];
@@ -59,7 +60,7 @@
   const buildSidebar = () => {
     sidebar.innerHTML = '';
     sidebar.append(h('div', { class: 'brand' }, brandMark(),
-      h('div', {}, h('div', { class: 'brand-name', text: 'Maschinenlabor' }), h('div', { class: 'brand-sub', text: 'Maschinen und Antriebe' }))));
+      h('div', {}, h('div', { class: 'brand-name', text: 'Maschinenlabor' }), h('div', { class: 'brand-sub', text: L('Maschinen und Antriebe', 'Machines and Drives') }))));
     links = [];
     for (const g of NAV) {
       const nav = h('nav', { class: 'nav' });
@@ -81,11 +82,15 @@
       ui.invalidateTheme();
     };
     const theme = ui.seg({
-      options: [{ value: 'auto', label: 'Auto' }, { value: 'light', label: 'Hell' }, { value: 'dark', label: 'Dunkel' }],
-      get: getTheme, set: setTheme, full: true, label: 'Erscheinungsbild',
+      options: [{ value: 'auto', label: 'Auto' }, { value: 'light', label: L('Hell', 'Light') }, { value: 'dark', label: L('Dunkel', 'Dark') }],
+      get: getTheme, set: setTheme, full: true, label: L('Erscheinungsbild', 'Appearance'),
     });
-    sidebar.append(h('div', { class: 'sidebar-foot' }, theme.el,
-      h('p', { html: 'Lernwerkzeug, kein Ersatz für Skriptum und Übung. Alle Modelle, Kennlinien und Bilder werden hier aus den Gleichungen berechnet.' })));
+    const lang = ui.seg({
+      options: [{ value: 'de', label: 'Deutsch' }, { value: 'en', label: 'English' }],
+      get: () => MS.lang, set: MS.setLang, full: true, label: L('Sprache', 'Language'),
+    });
+    sidebar.append(h('div', { class: 'sidebar-foot' }, lang.el, theme.el,
+      h('p', { html: L('Lernwerkzeug, kein Ersatz für Skriptum und Übung. Alle Modelle, Kennlinien und Bilder werden hier aus den Gleichungen berechnet.', 'A learning tool, not a replacement for the lecture notes and exercises. All models, characteristics and drawings are computed here from the equations.') })));
   };
 
   // ---------------------------------------------------------------- router
@@ -108,7 +113,7 @@
     } catch (err) {
       console.error(err);
       page = null;
-      main.append(h('div', { class: 'home' }, h('h1', { text: 'Diese Seite konnte nicht geladen werden.' }), h('p', { class: 'muted', text: String(err) })));
+      main.append(h('div', { class: 'home' }, h('h1', { text: L('Diese Seite konnte nicht geladen werden.', 'This page could not be loaded.') }), h('p', { class: 'muted', text: String(err) })));
       return;
     }
     main.append(page.el);
@@ -145,6 +150,8 @@
 
   // ---------------------------------------------------------------- init
   buildSidebar();
+  const meta = document.querySelector('meta[name="description"]');
+  if (meta) meta.content = L(meta.content, 'Interactive simulation of electric machines for learning: DC machine, permanent-magnet synchronous machine, space vectors – characteristics, equivalent circuits, phasor diagrams.');
   main.addEventListener('scroll', () => main.classList.toggle('scrolled', main.scrollTop > 4), { passive: true });
   ui.themeListeners.add(() => {
     buildSidebar();

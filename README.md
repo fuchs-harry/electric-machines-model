@@ -39,7 +39,7 @@ I built this while preparing for my **Machines and Drives** exam (*Maschinen und
 
 Every physical quantity has the same color everywhere: voltage blue, current orange, flux teal, torque violet, speed green. Everything else is black and white.
 
-The interface is in German and uses the notation of the lecture: passive sign convention (*Verbraucherzählpfeilsystem*), per-unit quantities referred to peak values, and space vectors with the factor ⅔.
+The interface is available in **English and German**: switch in the sidebar, or link directly with `?lang=en` / `?lang=de`. Without a choice, it follows the browser language. Symbols and conventions follow the lecture in both languages: passive sign convention (*Verbraucherzählpfeilsystem*), per-unit quantities referred to peak values, and space vectors with the factor ⅔. Subscripts stay German, e.g. U<sub>A</sub> for the armature voltage and I<sub>E</sub> for the field current.
 
 ## Getting started
 
@@ -64,7 +64,7 @@ npm test          # or: node --test tests/physics.test.js   (Node ≥ 18)
 ```
 index.html
 css/style.css                 design tokens, layout (light/dark)
-js/core/                      namespace, complex numbers, RK4, eigenvalues
+js/core/                      namespace, language switch (MS.L), complex numbers, RK4, eigenvalues
 js/physics/                   dc.js, psm.js, magnet.js (magnetization curve), loads.js
 js/ui/                        DOM helpers, controls, charts,
                               machine-art.js (cross-sections), circuits.js (equivalent circuits)

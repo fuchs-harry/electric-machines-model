@@ -6,14 +6,15 @@
 (function (root) {
   'use strict';
   const MS = root.MS || (root.MS = {});
+  const L = MS.L || ((de) => de);
 
   const TYPES = {
-    none: { label: 'Keine Last', hint: 'Leerlauf – nur Reibung' },
-    hoist: { label: 'Hubwerk (konstant)', hint: 'Aktive Last: wirkt auch im Stillstand und kann rückwärts ziehen' },
-    friction: { label: 'Reibung (konstant)', hint: 'Passive Last: wirkt immer gegen die Drehrichtung' },
-    linear: { label: 'Linear (∝ n)', hint: 'z. B. Kalander, Generator auf Widerstand' },
-    fan: { label: 'Lüfter / Pumpe (∝ n²)', hint: 'Strömungsmaschinen' },
-    power: { label: 'Konstante Leistung (∝ 1/n)', hint: 'z. B. Wickler, Spindel; bei kleinen Drehzahlen begrenzt' },
+    none: { label: L('Keine Last', 'No load'), hint: L('Leerlauf – nur Reibung', 'No load – friction only') },
+    hoist: { label: L('Hubwerk (konstant)', 'Hoist (constant)'), hint: L('Aktive Last: wirkt auch im Stillstand und kann rückwärts ziehen', 'Active load: acts at standstill too and can pull backwards') },
+    friction: { label: L('Reibung (konstant)', 'Friction (constant)'), hint: L('Passive Last: wirkt immer gegen die Drehrichtung', 'Passive load: always opposes the direction of rotation') },
+    linear: { label: 'Linear (∝ n)', hint: L('z. B. Kalander, Generator auf Widerstand', 'e.g. calender, generator on a resistor') },
+    fan: { label: L('Lüfter / Pumpe (∝ n²)', 'Fan / pump (∝ n²)'), hint: L('Strömungsmaschinen', 'Turbomachines') },
+    power: { label: L('Konstante Leistung (∝ 1/n)', 'Constant power (∝ 1/n)'), hint: L('z. B. Wickler, Spindel; bei kleinen Drehzahlen begrenzt', 'e.g. winder, spindle; limited at low speed') },
   };
 
   /** Smooth sign so stiction does not make the ODE stiff. */

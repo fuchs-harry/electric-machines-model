@@ -23,15 +23,16 @@
 (function (root) {
   'use strict';
   const MS = root.MS || (root.MS = {});
+  const L = MS.L || ((de) => de);
   const { magnet, loads } = MS;
 
   const R_OPEN = 1e5; // R_L at or above this counts as open terminals
 
   const TYPES = {
-    pm: { label: 'Permanenterregt', short: 'PM' },
-    fremd: { label: 'Fremderregt', short: 'Fremd' },
-    neben: { label: 'Nebenschluss', short: 'Neben' },
-    reihen: { label: 'Reihenschluss', short: 'Reihen' },
+    pm: { label: L('Permanenterregt', 'Permanent magnet'), short: 'PM' },
+    fremd: { label: L('Fremderregt', 'Separately excited'), short: L('Fremd', 'Separate') },
+    neben: { label: L('Nebenschluss', 'Shunt'), short: L('Neben', 'Shunt') },
+    reihen: { label: L('Reihenschluss', 'Series'), short: L('Reihen', 'Series') },
   };
 
   /** Default parameter sets – plausible machines, not taken from any exam. */

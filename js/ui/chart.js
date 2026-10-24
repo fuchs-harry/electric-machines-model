@@ -437,7 +437,7 @@
       this.timeLabel = timeLabel;
       this.timeScale = timeScale; // multiply sim time for the axis (e.g. 1000 for ms)
       this.stripHeight = stripHeight;
-      this.canvas = h('canvas', { role: 'img', 'aria-label': 'Zeitverläufe' });
+      this.canvas = h('canvas', { role: 'img', 'aria-label': MS.L('Zeitverläufe', 'Time plots') });
       box.classList.add('chart-box');
       box.style.height = strips.length * stripHeight + 34 + 'px';
       box.append(this.canvas);
@@ -639,7 +639,7 @@
   class Phasor {
     constructor(box, { aspect = 1, height, axes = [{ angle: 0, label: { sym: 'd' } }, { angle: Math.PI / 2, label: { sym: 'q' } }], minRange = 1 } = {}) {
       this.box = box;
-      this.canvas = h('canvas', { role: 'img', 'aria-label': 'Zeigerdiagramm' });
+      this.canvas = h('canvas', { role: 'img', 'aria-label': MS.L('Zeigerdiagramm', 'Phasor diagram') });
       box.classList.add('chart-box');
       if (height) box.style.height = height + 'px'; else box.style.aspectRatio = String(aspect);
       box.append(this.canvas);

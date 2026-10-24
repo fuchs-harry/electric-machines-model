@@ -17,6 +17,7 @@
 (function (root) {
   'use strict';
   const MS = root.MS || (root.MS = {});
+  const L = MS.L || ((de) => de);
 
   const TAU = Math.PI * 2;
   const DEG = Math.PI / 180;
@@ -234,7 +235,10 @@
 
   // ------------------------------------------------------------- DC machine
   const DC_TYPES = ['pm', 'fremd', 'neben', 'reihen'];
-  const DC_CAPTION = { pm: 'Permanenterregt', fremd: 'Fremderregt', neben: 'Nebenschluss', reihen: 'Reihenschluss' };
+  const DC_CAPTION = {
+    pm: L('Permanenterregt', 'Permanent magnet'), fremd: L('Fremderregt', 'Separately excited'),
+    neben: L('Nebenschluss', 'Shunt-wound'), reihen: L('Reihenschluss', 'Series-wound'),
+  };
 
   function drawDC(ctx, o) {
     o = o || {};
@@ -702,7 +706,7 @@
 
     // 8 · captions
     if (labels) {
-      text(ctx, bldc ? 'Blockkommutierung' : 'Sinuskommutierung', cx - 0.5 * s + 1, cy - 0.5 * s + lblPx * 0.7, lblPx, P.ink2, 'left');
+      text(ctx, bldc ? L('Blockkommutierung', 'Block commutation') : L('Sinuskommutierung', 'Sinusoidal commutation'), cx - 0.5 * s + 1, cy - 0.5 * s + lblPx * 0.7, lblPx, P.ink2, 'left');
       if (p === 2) {
         const x0 = cx - 0.5 * s + 1, y0 = cy + 0.5 * s - lblPx * 0.7;
         const w = sym(ctx, 'p', '', x0, y0, symPx - 1, P.ink2, 'left');
@@ -712,7 +716,7 @@
         const blk = blockOf(i1, i2, i3);
         const str = blk
           ? 'Block ' + blk.name + '  (' + SIGN_CHAR[blk.sig[0]] + ', ' + SIGN_CHAR[blk.sig[1]] + ', ' + SIGN_CHAR[blk.sig[2]] + ')'
-          : 'Zwei Stränge leiten';
+          : L('Zwei Stränge leiten', 'Two phases conducting');
         text(ctx, str, cx + 0.5 * s - 1, cy + 0.5 * s - lblPx * 0.7, lblPx, P.ink2, 'right');
       }
     }

@@ -6,6 +6,7 @@
 (function (root) {
   'use strict';
   const MS = root.MS;
+  const L = MS.L;
   const ui = MS.ui;
   const { h } = ui;
   MS.pages = MS.pages || {};
@@ -20,7 +21,7 @@
     const transport = h('div', { class: 'transport' }, ...controls);
     const toolbar = h('header', { class: 'toolbar' }, menu, h('div', { class: 'title-block' }, titleEl, subEl), transport);
     const stage = h('div', { class: 'stage' });
-    const inspector = h('aside', { class: 'inspector', 'aria-label': 'Einstellungen' });
+    const inspector = h('aside', { class: 'inspector', 'aria-label': L('Einstellungen', 'Settings') });
     const workspace = h('div', { class: 'workspace' }, stage, inspector);
     const el = h('div', { class: 'page' }, toolbar, workspace);
     // keep the sticky inspector just below the (wrapping) toolbar
@@ -30,8 +31,8 @@
 
   /** Speed (time-lapse) options. */
   shell.SPEEDS = [
-    { value: '1', label: 'Echtzeit' },
-    { value: '0.5', label: '½ × langsamer' },
+    { value: '1', label: L('Echtzeit', 'Real time') },
+    { value: '0.5', label: L('½ × langsamer', '½ × slower') },
     { value: '0.25', label: '¼ ×' },
     { value: '0.1', label: '1/10 ×' },
     { value: '0.02', label: '1/50 ×' },
@@ -42,18 +43,18 @@
    * Transport controls. sim = {isOn, setOn, running, setRunning, reset, speed, setSpeed}
    */
   shell.transport = (sim) => {
-    const power = ui.power({ get: () => sim.isOn(), set: (v) => sim.setOn(v), title: 'Maschine ein-/ausschalten' });
+    const power = ui.power({ get: () => sim.isOn(), set: (v) => sim.setOn(v), title: L('Maschine ein-/ausschalten', 'Switch the machine on/off') });
     const play = ui.button({ icon: 'pause', kind: '', title: 'Pause' });
     const syncPlay = () => {
       const r = sim.running();
       play.replaceChildren(ui.icon(r ? 'pause' : 'play'));
-      play.title = r ? 'Pause' : 'Weiter';
+      play.title = r ? L('Pause', 'Pause') : L('Weiter', 'Resume');
       play.setAttribute('aria-label', play.title);
     };
     play.classList.add('icon');
     play.addEventListener('click', () => { sim.setRunning(!sim.running()); syncPlay(); });
-    const reset = ui.button({ icon: 'reset', title: 'Zurücksetzen (Stillstand)', onClick: () => { sim.reset(); syncAll(); } });
-    const sel = h('select', { 'aria-label': 'Simulationstempo', title: 'Tempo der Simulation (Zeitlupe)' });
+    const reset = ui.button({ icon: 'reset', title: L('Zurücksetzen (Stillstand)', 'Reset (standstill)'), onClick: () => { sim.reset(); syncAll(); } });
+    const sel = h('select', { 'aria-label': L('Simulationstempo', 'Simulation speed'), title: L('Tempo der Simulation (Zeitlupe)', 'Simulation speed (slow motion)') });
     for (const o of shell.SPEEDS) sel.append(h('option', { value: o.value, text: o.label }));
     sel.addEventListener('change', () => sim.setSpeed(parseFloat(sel.value)));
     const speed = h('span', { class: 'popup' }, sel);
@@ -76,11 +77,11 @@
     const expBox = h('div', { class: 'inspector-pane experiments' });
     if (experiments) expBox.append(experiments);
     const seg = ui.seg({
-      options: [{ value: 'params', label: 'Parameter' }, { value: 'exp', label: 'Experimente' }],
+      options: [{ value: 'params', label: L('Parameter', 'Parameters') }, { value: 'exp', label: L('Experimente', 'Experiments') }],
       get: () => tab,
       set: (v) => { tab = v; show(); },
       full: true,
-      label: 'Inspektor',
+      label: L('Inspektor', 'Inspector'),
     });
     const show = () => {
       paramsBox.style.display = tab === 'params' ? 'flex' : 'none';
@@ -154,7 +155,7 @@
    */
   shell.experiments = (list, runner) => {
     const box = h('div', { class: 'experiments' });
-    box.append(h('p', { class: 'group-foot', style: { padding: '0 4px' }, html: 'Erst tippen, was passieren wird. Dann starten und beobachten – die Auflösung erscheint, sobald der Versuch gelaufen ist.' }));
+    box.append(h('p', { class: 'group-foot', style: { padding: '0 4px' }, html: L('Erst tippen, was passieren wird. Dann starten und beobachten – die Auflösung erscheint, sobald der Versuch gelaufen ist.', 'First guess what will happen. Then run it and watch – the explanation appears once the experiment has finished.') }));
     for (const exp of list) {
       let picked = -1;
       const choiceBtns = exp.choices.map((c, i) => {
@@ -173,22 +174,22 @@
           b.classList.toggle('right', j === exp.correct);
           b.classList.toggle('wrong', j === picked && !ok);
         });
-        verdict.innerHTML = (picked < 0 ? '' : ok ? '<strong>Richtig.</strong> ' : '<strong>Nicht ganz.</strong> ') + exp.explain;
+        verdict.innerHTML = (picked < 0 ? '' : ok ? L('<strong>Richtig.</strong> ', '<strong>Correct.</strong> ') : L('<strong>Nicht ganz.</strong> ', '<strong>Not quite.</strong> ')) + exp.explain;
       };
       const startBtn = ui.button({
-        label: 'Versuch starten', icon: 'play', kind: 'primary', small: true,
+        label: L('Versuch starten', 'Run experiment'), icon: 'play', kind: 'primary', small: true,
         onClick: () => {
           verdict.hidden = true;
           choiceBtns.forEach((b) => b.classList.remove('right', 'wrong'));
           runner.start(exp, reveal);
         },
       });
-      const showBtn = ui.button({ label: 'Auflösung', kind: 'plain', small: true, onClick: reveal });
+      const showBtn = ui.button({ label: L('Auflösung', 'Show answer'), kind: 'plain', small: true, onClick: reveal });
       box.append(h('article', { class: 'exp' },
         h('div', { class: 'exp-head' }, h('h3', { html: exp.title }), exp.tag ? h('span', { class: 'badge', text: exp.tag }) : null),
         h('p', { html: exp.question }),
         h('div', { class: 'choices' }, ...choiceBtns),
-        exp.watch ? h('p', { class: 'muted', style: { fontSize: '12px' }, html: 'Beobachte: ' + exp.watch }) : null,
+        exp.watch ? h('p', { class: 'muted', style: { fontSize: '12px' }, html: L('Beobachte: ', 'Watch: ') + exp.watch }) : null,
         h('div', { class: 'exp-actions' }, startBtn, showBtn),
         verdict));
     }

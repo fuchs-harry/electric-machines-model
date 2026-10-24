@@ -19,6 +19,7 @@
 (function (root) {
   'use strict';
   const MS = root.MS || (root.MS = {});
+  const L = MS.L || ((de) => de);
 
   const TOKENS = {
     light: {
@@ -58,7 +59,7 @@
     let s = v.toFixed(dec);
     if (s.indexOf('.') >= 0) s = s.replace(/\.?0+$/, '');
     if (s === '-0') s = '0';
-    return s.replace('-', '−');
+    return s.replace('-', '−').replace('.', L(',', '.'));
   }
   /** SI value with unit and a sensible prefix ("0.6 mH", "1.2 kΩ"). */
   function fmtSI(v, unit, n) {
@@ -579,15 +580,15 @@
       const Uval = fmtSI(load ? (isNum(v.U) ? v.U : v.UA) : (isNum(v.UA) ? v.UA : v.U), 'V');
       S.varrow(Lx + 22, CY - 22, Lx + 22, CY + 22);
       S.stack(Lx + 32, CY, 0, Usym, Uval);
-      if (converter) S.note(Lx + 32, CY + S.lh * 1.6 / S.s, 'Stromrichter', 0);
-      if (openLoad) S.note(Lx + 32, CY + S.lh * 1.6 / S.s, 'Klemmen offen', 0);
+      if (converter) S.note(Lx + 32, CY + S.lh * 1.6 / S.s, L('Stromrichter', 'Converter'), 0);
+      if (openLoad) S.note(Lx + 32, CY + S.lh * 1.6 / S.s, L('Klemmen offen', 'Terminals open'), 0);
       // I_A beside the arrowhead on the right rail
       S.stack(Rx - 10, T + 24, 1, [m('I', 'A')], fmtSI(v.IA, 'A'));
       // U_i beside the induced-voltage source
       S.varrow(Rx - 22, CY - 22, Rx - 22, CY + 22);
       S.stack(Rx - 32, CY, 1, [m('U', 'i')], fmtSI(v.Ui, 'V'));
       if (neben) S.inline(Lx + 92, T - 14, 0.5, [m('I')], fmtSI(v.Isup, 'A'));
-      if (fieldRev) S.note(Rx - 120, B + 15, 'Feld umgepolt', 0.5);
+      if (fieldRev) S.note(Rx - 120, B + 15, L('Feld umgepolt', 'Field reversed'), 0.5);
 
       // ---- mechanical read-out
       S.readout((Lx + Rx) / 2, 216, [
@@ -686,10 +687,10 @@
         const uVal = src === 'short' ? '0' : fmtPU(v.absU);
         S.varrow(Lx + 22, CY - 22, Lx + 22, CY + 22);
         S.stack(Lx + 32, CY, 0, [u('|'), m('u', 'S'), u('|')], uVal);
-        if (src === 'inverter') S.note(Lx + 32, CY + S.lh * 1.6 / S.s, 'Wechselrichter', 0);
-        if (src === 'uf') S.note(Lx + 32, CY + S.lh * 1.6 / S.s, 'U/f-Steuerung', 0);
-        if (src === 'short') S.note(Lx + 32, CY + S.lh * 1.6 / S.s, 'Kurzschluss', 0);
-        if (src === 'open') S.note(Lx + 32, CY + S.lh * 1.6 / S.s, 'Klemmen offen', 0);
+        if (src === 'inverter') S.note(Lx + 32, CY + S.lh * 1.6 / S.s, L('Wechselrichter', 'Inverter'), 0);
+        if (src === 'uf') S.note(Lx + 32, CY + S.lh * 1.6 / S.s, L('U/f-Steuerung', 'U/f control'), 0);
+        if (src === 'short') S.note(Lx + 32, CY + S.lh * 1.6 / S.s, L('Kurzschluss', 'Short circuit'), 0);
+        if (src === 'open') S.note(Lx + 32, CY + S.lh * 1.6 / S.s, L('Klemmen offen', 'Terminals open'), 0);
         S.stack(Rx - 10, T + 24, 1, [u('|'), m('i', 'S'), u('|')], fmtPU(src === 'open' ? 0 : v.absI));
         S.varrow(Rx - 22, CY - 22, Rx - 22, CY + 22);
         S.stack(Rx - 32, CY, 1, [m('jωψ', 'M')], fmtPU(mul(w, psiM)));
@@ -730,7 +731,7 @@
             S.varrow(Rx - 22, cy - h, Rx - 22, cy + h);
             S.stack(Rx - 32, cy, 1, lp.emf[i].parts, fmtPU(lp.emf[i].val));
           }
-          S.note((Lx + Rx) / 2, 204, lp.axis + '-Achse', 0.5);
+          S.note((Lx + Rx) / 2, 204, L(lp.axis + '-Achse', lp.axis + ' axis'), 0.5);
         }
         S.readout(W0 / 2, 226, [
           { color: S.t.speed, parts: [m('ω')], val: fmtPU(w) },

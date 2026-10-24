@@ -22,15 +22,16 @@
 (function (root) {
   'use strict';
   const MS = root.MS || (root.MS = {});
+  const L = MS.L || ((de) => de);
   const { loads } = MS;
   const D60 = Math.PI / 3;
 
   const MODES = {
-    foc: { label: 'Sinus (feldorientiert)', short: 'Sinus' },
+    foc: { label: L('Sinus (feldorientiert)', 'Sinusoidal (field-oriented)'), short: L('Sinus', 'Sine') },
     bldc: { label: 'Block (BLDC)', short: 'BLDC' },
-    uf: { label: 'Spannungsgesteuert (U/f)', short: 'U/f' },
-    passive: { label: 'Generator / Kurzschluss', short: 'Passiv' },
-    dc: { label: 'Gleichstrom einprägen', short: 'Gleichstrom' },
+    uf: { label: L('Spannungsgesteuert (U/f)', 'Voltage-controlled (U/f)'), short: 'U/f' },
+    passive: { label: L('Generator / Kurzschluss', 'Generator / short circuit'), short: L('Passiv', 'Passive') },
+    dc: { label: L('Gleichstrom einprägen', 'DC injection'), short: L('Gleichstrom', 'DC') },
   };
 
   /** Block-current directions A–F (φ = −30° + k·60°) with their phase-sign pattern. */

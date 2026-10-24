@@ -12,6 +12,33 @@
   MS.TAU = Math.PI * 2;
   MS.DEG = Math.PI / 180;
 
+  // ---------------------------------------------------------------- language
+  /**
+   * UI language: `?lang=de|en`, then the stored choice, then the browser.
+   * Strings are picked when the scripts load (`MS.L('Deutsch', 'English')`),
+   * so `MS.setLang` reloads the page. Node (tests) always gets German.
+   */
+  const LANGS = ['de', 'en'];
+  MS.lang = (() => {
+    if (typeof document === 'undefined') return 'de';
+    try {
+      const q = new URLSearchParams(location.search).get('lang');
+      if (LANGS.includes(q)) return q;
+      const s = localStorage.getItem('ml-lang');
+      if (LANGS.includes(s)) return s;
+    } catch (e) { /* storage unavailable */ }
+    return /^de\b/i.test(navigator.language || '') ? 'de' : 'en';
+  })();
+  MS.L = (de, en) => (MS.lang === 'en' ? en : de);
+  MS.setLang = (lang) => {
+    if (!LANGS.includes(lang) || lang === MS.lang) return;
+    try { localStorage.setItem('ml-lang', lang); } catch (e) { /* storage unavailable */ }
+    const url = new URL(location.href);
+    url.searchParams.set('lang', lang);
+    location.replace(url.href);
+  };
+  if (typeof document !== 'undefined') document.documentElement.lang = MS.lang;
+
   MS.clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
   MS.lerp = (a, b, t) => a + (b - a) * t;
   MS.sgn = (x) => (x > 0) - (x < 0);

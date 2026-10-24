@@ -70,7 +70,7 @@
 
   // ---------------------------------------------------------------- numbers
   const nfCache = {};
-  const nf = (d) => nfCache[d] || (nfCache[d] = new Intl.NumberFormat('de-AT', {
+  const nf = (d) => nfCache[d] || (nfCache[d] = new Intl.NumberFormat(MS.L('de-AT', 'en-US'), {
     minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: true,
   }));
   /** Decimal places chosen from the magnitude so read-outs stay calm. */
@@ -87,9 +87,9 @@
     const s = nf(d).format(Math.abs(v) < 0.5 * 10 ** -d ? 0 : v);
     return s.replace('-', '−');
   };
-  /** Parse "1,5", "1.5", "−2" … */
+  /** Parse "1,5", "1.5", "−2" … (in English a comma only groups digits: "1,500") */
   ui.parse = (s) => {
-    const t = String(s).trim().replace(/\s/g, '').replace('−', '-').replace(',', '.');
+    const t = String(s).trim().replace(/\s/g, '').replace('−', '-').replace(MS.lang === 'en' ? /,/g : ',', MS.L('.', ''));
     const v = parseFloat(t);
     return Number.isFinite(v) ? v : null;
   };

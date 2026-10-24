@@ -26,7 +26,7 @@
       return MS.clamp(v, min, max);
     };
     const range = h('input', { type: 'range', min: 0, max: 1000, step: 1, 'aria-label': typeof desc === 'string' ? desc : '' });
-    const num = h('input', { type: 'text', inputmode: 'decimal', 'aria-label': (typeof desc === 'string' ? desc : '') + ' Wert' });
+    const num = h('input', { type: 'text', inputmode: 'decimal', 'aria-label': (typeof desc === 'string' ? desc : '') + MS.L(' Wert', ' value') });
     const lbl = h('span', { class: 'lbl' }, keyBar(q), h('span', { html: label }), desc ? h('span', { class: 'desc', text: desc }) : null);
     const row = h('div', { class: 'row' },
       h('div', { class: 'row-line' }, lbl, h('span', { class: 'valbox' }, num, h('span', { class: 'unit', html: unit }))),
@@ -150,7 +150,7 @@
   };
 
   /** Big power switch for the toolbar. */
-  ui.power = ({ get, set, labelOn = 'Ein', labelOff = 'Aus', title = 'Einschalten' }) => {
+  ui.power = ({ get, set, labelOn = MS.L('Ein', 'On'), labelOff = MS.L('Aus', 'Off'), title = MS.L('Einschalten', 'Switch on') }) => {
     const txt = h('span');
     const b = h('button', { type: 'button', class: 'power', title }, h('span', { class: 'knob' }, ui.icon('power')), txt);
     b.addEventListener('click', () => { set(!get()); sync(); });
